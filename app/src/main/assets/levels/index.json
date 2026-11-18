@@ -1,0 +1,109 @@
+{
+ "chapter": 1,
+ "title": {
+  "en": "Training Wing",
+  "id": "Sayap Latihan"
+ },
+ "levels": [
+  {
+   "id": "c1_01_power_up",
+   "order": 1,
+   "concept": "sequence",
+   "par": {
+    "lines": 11,
+    "moves": 9
+   },
+   "scenarios": 1
+  },
+  {
+   "id": "c1_02_long_corridor",
+   "order": 2,
+   "concept": "for loop",
+   "par": {
+    "lines": 6,
+    "moves": 11
+   },
+   "scenarios": 1
+  },
+  {
+   "id": "c1_03_look_ahead",
+   "order": 3,
+   "concept": "sensor + if/else",
+   "par": {
+    "lines": 12,
+    "moves": 6
+   },
+   "scenarios": 2
+  },
+  {
+   "id": "c1_04_compare_routes",
+   "order": 4,
+   "concept": "variables + comparison",
+   "par": {
+    "lines": 9,
+    "moves": 3
+   },
+   "scenarios": 2
+  },
+  {
+   "id": "c1_05_follow_corridor",
+   "order": 5,
+   "concept": "while loop",
+   "par": {
+    "lines": 3,
+    "moves": 10
+   },
+   "scenarios": 3
+  },
+  {
+   "id": "c1_06_open_the_door",
+   "order": 6,
+   "concept": "state and order",
+   "par": {
+    "lines": 8,
+    "moves": 8
+   },
+   "scenarios": 1
+  },
+  {
+   "id": "c1_07_battery_budget",
+   "order": 7,
+   "concept": "resources + planning",
+   "par": {
+    "lines": 6,
+    "moves": 8
+   },
+   "scenarios": 1
+  },
+  {
+   "id": "c1_08_hazard_field",
+   "order": 8,
+   "concept": "scan_object + while + if",
+   "par": {
+    "lines": 9,
+    "moves": 9
+   },
+   "scenarios": 2
+  },
+  {
+   "id": "c1_09_reusable_routine",
+   "order": 9,
+   "concept": "functions",
+   "par": {
+    "lines": 11,
+    "moves": 17
+   },
+   "scenarios": 1
+  },
+  {
+   "id": "c1_10_facility_run",
+   "order": 10,
+   "concept": "everything",
+   "par": {
+    "lines": 17,
+    "moves": 26
+   },
+   "scenarios": 1
+  }
+ ]
+}

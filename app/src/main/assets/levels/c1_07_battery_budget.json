@@ -1,0 +1,101 @@
+{
+ "id": "c1_07_battery_budget",
+ "order": 7,
+ "concept": "resources + planning",
+ "title": {
+  "en": "Battery Budget",
+  "id": "Anggaran Baterai"
+ },
+ "briefing": {
+  "en": "The battery cannot reach the exit. A charger sits on the way. Use it at the right moment.",
+  "id": "Baterai tidak cukup untuk sampai ke pintu keluar. Ada pengisi daya di jalan. Pakai pada saat yang tepat."
+ },
+ "hints": {
+  "en": [
+   "Each move costs 1 battery. robot.battery() tells you what is left.",
+   "The charger works once. Use robot.action() on it.",
+   "Count the moves before you start."
+  ],
+  "id": [
+   "Tiap langkah memakai 1 baterai. robot.battery() menunjukkan sisanya.",
+   "Pengisi daya hanya bisa dipakai sekali. Gunakan robot.action() di atasnya.",
+   "Hitung langkah sebelum mulai."
+  ]
+ },
+ "starter": "print(robot.battery())\n",
+ "python_features": [
+  "for"
+ ],
+ "map": [
+  ".........",
+  ".........",
+  "........."
+ ],
+ "robot_start": {
+  "x": 0,
+  "y": 1
+ },
+ "robot_api": [
+  "move",
+  "action",
+  "battery"
+ ],
+ "resources": {
+  "battery": {
+   "initial": 5,
+   "minimum": 0,
+   "maximum": 20,
+   "move_cost": 1
+  }
+ },
+ "sensors": [],
+ "scenarios": [],
+ "objects": [
+  {
+   "id": "charger",
+   "type": "CHARGER",
+   "position": {
+    "x": 4,
+    "y": 1
+   },
+   "single_use": true,
+   "resource_changes": {
+    "battery": 8
+   },
+   "completes_objective": "recharged",
+   "timeline_event": "recharge",
+   "event_message": "Battery recharged by 8."
+  },
+  {
+   "id": "exit",
+   "type": "EXIT",
+   "position": {
+    "x": 8,
+    "y": 1
+   },
+   "completes_objective": "open_exit",
+   "timeline_event": "open_exit",
+   "event_message": "Exit opened. Level completed.",
+   "prerequisite_error": "The exit is offline. Finish the earlier objective first.",
+   "required_objectives": [
+    "recharged"
+   ]
+  }
+ ],
+ "objectives": [
+  {
+   "id": "recharged",
+   "completion_event": "recharged"
+  },
+  {
+   "id": "open_exit",
+   "completion_event": "exit_open"
+  }
+ ],
+ "schema": 2,
+ "chapter": 1,
+ "par": {
+  "lines": 6,
+  "moves": 8
+ }
+}

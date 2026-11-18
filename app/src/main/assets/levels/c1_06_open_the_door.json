@@ -1,0 +1,100 @@
+{
+ "id": "c1_06_open_the_door",
+ "order": 6,
+ "concept": "state and order",
+ "title": {
+  "en": "Open the Door",
+  "id": "Buka Pintunya"
+ },
+ "briefing": {
+  "en": "A locked door blocks the exit. A switch in the side room opens it. Plan the order of actions.",
+  "id": "Sebuah pintu terkunci menghalangi jalan keluar. Saklar di ruang samping membukanya. Rencanakan urutan aksi."
+ },
+ "hints": {
+  "en": [
+   "The door tile D blocks you until a switch opens it.",
+   "robot.scan_object(\"right\") tells you what is next to you.",
+   "Press the switch with robot.action(), then walk through the door."
+  ],
+  "id": [
+   "Petak pintu D menghalangimu sampai saklar membukanya.",
+   "robot.scan_object(\"right\") memberi tahu apa yang ada di sebelahmu.",
+   "Tekan saklar dengan robot.action(), lalu lewati pintu."
+  ]
+ },
+ "starter": "# Try walking right. What blocks you?\nrobot.move(\"right\")\n",
+ "python_features": [
+  "conditions",
+  "for"
+ ],
+ "map": [
+  "...#...",
+  "...D...",
+  "...#..."
+ ],
+ "robot_start": {
+  "x": 0,
+  "y": 1
+ },
+ "robot_api": [
+  "move",
+  "action",
+  "scan_object"
+ ],
+ "resources": {
+  "battery": {
+   "initial": 10,
+   "minimum": 0,
+   "maximum": 30,
+   "move_cost": 1
+  }
+ },
+ "sensors": [],
+ "scenarios": [],
+ "objects": [
+  {
+   "id": "door_switch",
+   "type": "SWITCH",
+   "position": {
+    "x": 2,
+    "y": 0
+   },
+   "opens_doors": true,
+   "single_use": true,
+   "completes_objective": "open_door",
+   "timeline_event": "open_door",
+   "event_message": "Switch activated. The door is open."
+  },
+  {
+   "id": "exit",
+   "type": "EXIT",
+   "position": {
+    "x": 6,
+    "y": 1
+   },
+   "completes_objective": "open_exit",
+   "timeline_event": "open_exit",
+   "event_message": "Exit opened. Level completed.",
+   "prerequisite_error": "The exit is offline. Finish the earlier objective first.",
+   "required_objectives": [
+    "open_door"
+   ]
+  }
+ ],
+ "objectives": [
+  {
+   "id": "open_door",
+   "completion_event": "door_open"
+  },
+  {
+   "id": "open_exit",
+   "completion_event": "exit_open"
+  }
+ ],
+ "schema": 2,
+ "chapter": 1,
+ "par": {
+  "lines": 8,
+  "moves": 8
+ }
+}

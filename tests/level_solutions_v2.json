@@ -1,0 +1,62 @@
+{
+ "c1_01_power_up": {
+  "solution": "robot.move(\"up\")\nrobot.move(\"up\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"down\")\nrobot.move(\"down\")\nrobot.action()\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "robot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_02_long_corridor": {
+  "solution": "for step in range(6):\n    robot.move(\"right\")\nrobot.action()\nfor step in range(5):\n    robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "for step in range(3):\n    robot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_03_look_ahead": {
+  "solution": "robot.move(\"right\")\nif robot.scan_distance(\"right\") > 10:\n    robot.move(\"right\")\n    robot.move(\"right\")\n    robot.move(\"right\")\nelse:\n    robot.move(\"down\")\n    robot.move(\"right\")\n    robot.move(\"right\")\n    robot.move(\"up\")\n    robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "robot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_04_compare_routes": {
+  "solution": "left = robot.scan_distance(\"left\")\nright = robot.scan_distance(\"right\")\nif left > right:\n    direction = \"left\"\nelse:\n    direction = \"right\"\nfor step in range(3):\n    robot.move(direction)\nrobot.action()\n",
+  "naive": [
+   "for step in range(3):\n    robot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_05_follow_corridor": {
+  "solution": "while robot.scan_distance(\"right\") > 10:\n    robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "robot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_06_open_the_door": {
+  "solution": "robot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"up\")\nrobot.action()\nrobot.move(\"down\")\nfor step in range(4):\n    robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "for step in range(6):\n    robot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_07_battery_budget": {
+  "solution": "for step in range(4):\n    robot.move(\"right\")\nrobot.action()\nfor step in range(4):\n    robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "for step in range(8):\n    robot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_08_hazard_field": {
+  "solution": "while robot.scan_object(\"right\") != \"edge\":\n    if robot.scan_object(\"right\") == \"hazard\":\n        robot.move(\"up\")\n        robot.move(\"right\")\n        robot.move(\"right\")\n        robot.move(\"down\")\n    else:\n        robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "robot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_09_reusable_routine": {
+  "solution": "def dodge():\n    robot.move(\"up\")\n    robot.move(\"right\")\n    robot.move(\"right\")\n    robot.move(\"down\")\n\nwhile robot.scan_object(\"right\") != \"edge\":\n    if robot.scan_object(\"right\") == \"hazard\":\n        dodge()\n    else:\n        robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "robot.move(\"right\")\nrobot.move(\"right\")\nrobot.move(\"right\")\nrobot.action()\n"
+  ]
+ },
+ "c1_10_facility_run": {
+  "solution": "for step in range(7):\n    robot.move(\"right\")\nrobot.action()\nrobot.move(\"down\")\nrobot.move(\"down\")\nrobot.move(\"left\")\nrobot.move(\"left\")\nrobot.action()\nrobot.move(\"left\")\nrobot.move(\"down\")\nfor step in range(4):\n    robot.move(\"left\")\nrobot.move(\"down\")\nrobot.move(\"down\")\nfor step in range(7):\n    robot.move(\"right\")\nrobot.action()\n",
+  "naive": [
+   "for step in range(7):\n    robot.move(\"right\")\nrobot.action()\n"
+  ]
+ }
+}

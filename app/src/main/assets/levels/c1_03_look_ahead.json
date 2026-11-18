@@ -1,0 +1,113 @@
+{
+ "id": "c1_03_look_ahead",
+ "order": 3,
+ "concept": "sensor + if/else",
+ "title": {
+  "en": "Look Ahead",
+  "id": "Lihat ke Depan"
+ },
+ "briefing": {
+  "en": "An obstacle may or may not block the middle of the room. Read the range sensor, then choose the route. Your program must work in BOTH situations.",
+  "id": "Sebuah rintangan mungkin menghalangi tengah ruangan. Baca sensor jarak, lalu pilih rute. Programmu harus berhasil di KEDUA situasi."
+ },
+ "hints": {
+  "en": [
+   "robot.scan_distance(\"right\") returns the distance in cm. 10 means blocked right in front of you.",
+   "Use if distance > 10: ... else: ...",
+   "Test both scenarios. Hard-coding one route fails the other."
+  ],
+  "id": [
+   "robot.scan_distance(\"right\") mengembalikan jarak dalam cm. 10 berarti terhalang tepat di depan.",
+   "Gunakan if jarak > 10: ... else: ...",
+   "Uji kedua skenario. Rute yang ditulis kaku akan gagal di skenario lain."
+  ]
+ },
+ "starter": "# Step forward, then scan to the right.\nrobot.move(\"right\")\ndistance = robot.scan_distance(\"right\")\n",
+ "python_features": [
+  "conditions"
+ ],
+ "map": [
+  ".....",
+  ".....",
+  "....."
+ ],
+ "robot_start": {
+  "x": 0,
+  "y": 1
+ },
+ "robot_api": [
+  "move",
+  "action",
+  "scan_distance"
+ ],
+ "resources": {
+  "battery": {
+   "initial": 12,
+   "minimum": 0,
+   "maximum": 30,
+   "move_cost": 1
+  }
+ },
+ "sensors": [
+  {
+   "id": "range",
+   "type": "DISTANCE",
+   "source": "map",
+   "maximum_range": 100,
+   "cell_size_cm": 10
+  }
+ ],
+ "scenarios": [
+  {
+   "id": "blocked",
+   "obstacle_positions": [
+    {
+     "x": 2,
+     "y": 1
+    }
+   ]
+  },
+  {
+   "id": "clear",
+   "obstacle_positions": []
+  }
+ ],
+ "objects": [
+  {
+   "id": "front_obstacle",
+   "type": "OBSTACLE",
+   "position": {
+    "x": 2,
+    "y": 1
+   },
+   "scenario_ids": [
+    "blocked"
+   ],
+   "blocks_movement": true
+  },
+  {
+   "id": "exit",
+   "type": "EXIT",
+   "position": {
+    "x": 4,
+    "y": 1
+   },
+   "completes_objective": "open_exit",
+   "timeline_event": "open_exit",
+   "event_message": "Exit opened. Level completed.",
+   "prerequisite_error": "The exit is offline. Finish the earlier objective first."
+  }
+ ],
+ "objectives": [
+  {
+   "id": "open_exit",
+   "completion_event": "exit_open"
+  }
+ ],
+ "schema": 2,
+ "chapter": 1,
+ "par": {
+  "lines": 12,
+  "moves": 6
+ }
+}

@@ -1,0 +1,81 @@
+{
+ "id": "c1_09_reusable_routine",
+ "order": 9,
+ "concept": "functions",
+ "title": {
+  "en": "Reusable Routine",
+  "id": "Rutin yang Dipakai Ulang"
+ },
+ "briefing": {
+  "en": "Three hazards, same detour each time. Write the detour once as a function and call it whenever you need it.",
+  "id": "Tiga bahaya, rute memutar yang sama tiap kali. Tulis rute itu sekali sebagai fungsi dan panggil kapan perlu."
+ },
+ "hints": {
+  "en": [
+   "def dodge(): defines a function. Call it with dodge().",
+   "The body of the function must be indented.",
+   "Fewer lines earn more stars."
+  ],
+  "id": [
+   "def dodge(): membuat fungsi. Panggil dengan dodge().",
+   "Isi fungsi harus menjorok.",
+   "Baris lebih sedikit mendapat bintang lebih banyak."
+  ]
+ },
+ "starter": "def dodge():\n    robot.move(\"up\")\n",
+ "python_features": [
+  "conditions",
+  "while",
+  "functions"
+ ],
+ "map": [
+  "............",
+  "...H..H..H..",
+  "............"
+ ],
+ "robot_start": {
+  "x": 0,
+  "y": 1
+ },
+ "robot_api": [
+  "move",
+  "action",
+  "scan_object"
+ ],
+ "resources": {
+  "battery": {
+   "initial": 22,
+   "minimum": 0,
+   "maximum": 30,
+   "move_cost": 1
+  }
+ },
+ "sensors": [],
+ "scenarios": [],
+ "objects": [
+  {
+   "id": "exit",
+   "type": "EXIT",
+   "position": {
+    "x": 11,
+    "y": 1
+   },
+   "completes_objective": "open_exit",
+   "timeline_event": "open_exit",
+   "event_message": "Exit opened. Level completed.",
+   "prerequisite_error": "The exit is offline. Finish the earlier objective first."
+  }
+ ],
+ "objectives": [
+  {
+   "id": "open_exit",
+   "completion_event": "exit_open"
+  }
+ ],
+ "schema": 2,
+ "chapter": 1,
+ "par": {
+  "lines": 11,
+  "moves": 17
+ }
+}
