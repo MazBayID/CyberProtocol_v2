@@ -569,7 +569,7 @@ private fun TutorialIsometricMap(
     overlay: @Composable BoxScope.() -> Unit = {}
 ) {
     BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
-        val mapScale = minOf(1f, maxWidth.value / 270f, maxHeight.value / 187f)
+        val mapScale = minOf(maxWidth.value / 270f, maxHeight.value / 187f).coerceIn(0.75f, 1.25f)
         Box(
             Modifier.size(width = 270.dp, height = 187.dp)
                 .graphicsLayer(scaleX = mapScale, scaleY = mapScale)
@@ -618,8 +618,8 @@ private fun TutorialIsometricMap(
                     contentDescription = null,
                     modifier = Modifier.offset(
                         x = isometricTilePoint(0, 0).x,
-                        y = isometricTilePoint(0, 0).y - 38.dp
-                    ) .size(width = 54.dp, height = 48.dp),
+                        y = isometricTilePoint(0, 0).y - 34.dp
+                   ).size(width = 54.dp, height = 40.dp),
                     contentScale = ContentScale.Fit
                 )
                 Image(
@@ -627,8 +627,8 @@ private fun TutorialIsometricMap(
                     contentDescription = null,
                     modifier = Modifier.offset(
                         x = isometricTilePoint(columnCount - 1, 0).x,
-                        y = isometricTilePoint(columnCount - 1, 0).y - 38.dp
-                    ) .size(width = 54.dp, height = 48.dp),
+                        y = isometricTilePoint(columnCount - 1, 0).y - 34.dp
+                   ).size(width = 54.dp, height = 40.dp),
                     contentScale = ContentScale.Fit
                 )
                 for (column in 1 until columnCount - 1) {
@@ -642,8 +642,8 @@ private fun TutorialIsometricMap(
                         contentDescription = null,
                         modifier = Modifier.offset(
                             x = isometricTilePoint(column, 0).x,
-                            y = isometricTilePoint(column, 0).y - 38.dp
-                        ).size(width = 54.dp, height = 48.dp),
+                            y = isometricTilePoint(column, 0).y - 34.dp
+                        ).size(width = 54.dp, height = 40.dp),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -653,8 +653,8 @@ private fun TutorialIsometricMap(
                         contentDescription = null,
                         modifier = Modifier.offset(
                             x = isometricTilePoint(0, row).x,
-                            y = isometricTilePoint(0, row).y - 38.dp
-                        ).size(width = 54.dp, height = 48.dp).graphicsLayer(scaleX = -1f),
+                            y = isometricTilePoint(0, row).y - 34.dp
+                        ).size(width = 54.dp, height = 40.dp).graphicsLayer(scaleX = -1f),
                         contentScale = ContentScale.Fit
                     )
                     if (row != rightWallOpeningRow) {
@@ -663,8 +663,8 @@ private fun TutorialIsometricMap(
                             contentDescription = null,
                             modifier = Modifier.offset(
                                 x = isometricTilePoint(columnCount - 1, row).x,
-                                y = isometricTilePoint(columnCount - 1, row).y - 38.dp
-                            ).size(width = 54.dp, height = 48.dp).graphicsLayer(scaleX = -1f),
+                                y = isometricTilePoint(columnCount - 1, row).y - 34.dp
+                            ).size(width = 54.dp, height = 40.dp).graphicsLayer(scaleX = -1f),
                             contentScale = ContentScale.Fit
                         )
                     }
@@ -947,13 +947,30 @@ private fun TutorialRoomScene(snapshot: TutorialSnapshot, robotAction: String, r
                 ).size(58.dp)
             )
             if (!snapshot.energyCollected) {
+                // Keep the objective visually anchored to the same floor tile as the robot.
+                Box(
+                    Modifier.offset(
+                        x = isometricTilePoint(2, 2).x + 12.dp,
+                        y = isometricTilePoint(2, 2).y + 23.dp
+                    ).size(width = 30.dp, height = 8.dp)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xAA36E7F2),
+                                    Color(0x5536E7F2),
+                                    Color.Transparent
+                                )
+                            ),
+                            CircleShape
+                        )
+                )
                 Image(
                     painter = painterResource(R.drawable.resource_energy_cell),
-                    contentDescription = "Energy cell",
+                    contentDescription = "Energy cell objective",
                     modifier = Modifier.offset(
-                        x = isometricTilePoint(2, 2).x + 6.dp,
-                        y = isometricTilePoint(2, 2).y - 26.dp
-                    ).size(42.dp),
+                        x = isometricTilePoint(2, 2).x + 9.dp,
+                        y = isometricTilePoint(2, 2).y - 13.dp
+                    ).size(36.dp),
                     contentScale = ContentScale.Fit
                 )
             }
