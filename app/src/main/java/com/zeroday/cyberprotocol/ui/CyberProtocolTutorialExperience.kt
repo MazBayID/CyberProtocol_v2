@@ -763,7 +763,7 @@ private fun Tutorial2RoomScene(
                         if (snapshot.sensorDistance <= 30) 0 else 1,
                         if (snapshot.sensorDistance <= 30) 3 else 2
                     ).y - 42.dp
-                ).size(58.dp)
+                ).size(52.dp)
             )
         }
         Row(
@@ -944,7 +944,7 @@ private fun TutorialRoomScene(snapshot: TutorialSnapshot, robotAction: String, r
                 modifier = Modifier.offset(
                     x = isometricTilePoint(4, 2).x - 2.dp,
                     y = isometricTilePoint(4, 2).y - 42.dp
-                ).size(58.dp)
+                ).size(52.dp)
             )
             if (!snapshot.energyCollected) {
                 // Keep the objective visually anchored to the same floor tile as the robot.
