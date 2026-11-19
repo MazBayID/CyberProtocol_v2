@@ -610,64 +610,52 @@ private fun TutorialIsometricMap(
                 ).size(width = 54.dp, height = 27.dp),
                 contentScale = ContentScale.FillBounds
             )
-            // Back and side room boundaries follow the same isometric tile anchors.
+            // Build one continuous perimeter, then draw it in isometric depth order.
+            // Wall height intentionally exceeds the MX-01 sprite so the exit reads as a real doorway.
+            data class WallPlacement(
+                val column: Int,
+                val row: Int,
+                val resource: Int,
+                val flip: Boolean = false
+            )
             val columnCount = map.firstOrNull()?.length ?: 0
             if (columnCount > 0 && map.isNotEmpty()) {
-                Image(
-                    painter = painterResource(R.drawable.tile_wall_corner),
-                    contentDescription = null,
-                    modifier = Modifier.offset(
-                        x = isometricTilePoint(0, 0).x,
-                        y = isometricTilePoint(0, 0).y - 34.dp
-                   ).size(width = 54.dp, height = 40.dp),
-                    contentScale = ContentScale.Fit
-                )
-                Image(
-                    painter = painterResource(R.drawable.tile_wall_corner),
-                    contentDescription = null,
-                    modifier = Modifier.offset(
-                        x = isometricTilePoint(columnCount - 1, 0).x,
-                        y = isometricTilePoint(columnCount - 1, 0).y - 34.dp
-                   ).size(width = 54.dp, height = 40.dp),
-                    contentScale = ContentScale.Fit
-                )
-                for (column in 1 until columnCount - 1) {
-                    val wallResource = if (column == (columnCount - 1) / 2) {
-                        R.drawable.structure_window
-                    } else {
-                        R.drawable.tile_wall_straight
-                    }
-                    Image(
-                        painter = painterResource(wallResource),
-                        contentDescription = null,
-                        modifier = Modifier.offset(
-                            x = isometricTilePoint(column, 0).x,
-                            y = isometricTilePoint(column, 0).y - 34.dp
-                        ).size(width = 54.dp, height = 40.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-                for (row in 1 until map.size) {
-                    Image(
-                        painter = painterResource(R.drawable.tile_wall_straight),
-                        contentDescription = null,
-                        modifier = Modifier.offset(
-                            x = isometricTilePoint(0, row).x,
-                            y = isometricTilePoint(0, row).y - 34.dp
-                        ).size(width = 54.dp, height = 40.dp).graphicsLayer(scaleX = -1f),
-                        contentScale = ContentScale.Fit
-                    )
-                    if (row != rightWallOpeningRow) {
-                        Image(
-                            painter = painterResource(R.drawable.tile_wall_straight),
-                            contentDescription = null,
-                            modifier = Modifier.offset(
-                                x = isometricTilePoint(columnCount - 1, row).x,
-                                y = isometricTilePoint(columnCount - 1, row).y - 34.dp
-                            ).size(width = 54.dp, height = 40.dp).graphicsLayer(scaleX = -1f),
-                            contentScale = ContentScale.Fit
+                val walls = buildList {
+                    add(WallPlacement(0, 0, R.drawable.tile_wall_corner))
+                    add(WallPlacement(columnCount - 1, 0, R.drawable.tile_wall_corner))
+                    for (column in 1 until columnCount - 1) {
+                        add(
+                            WallPlacement(
+                                column,
+                                0,
+                                if (column == (columnCount - 1) / 2) {
+                                    R.drawable.structure_window
+                                } else {
+                                    R.drawable.tile_wall_straight
+                                }
+                            )
                         )
                     }
+                    for (row in 1 until map.size) {
+                        add(WallPlacement(0, row, R.drawable.tile_wall_straight, flip = true))
+                        if (row != rightWallOpeningRow) {
+                            add(WallPlacement(columnCount - 1, row, R.drawable.tile_wall_straight, flip = true))
+                        }
+                    }
+                }.sortedWith(compareBy<WallPlacement>({ it.column + it.row }, { it.row }, { it.column }))
+
+                walls.forEach { wall ->
+                    val point = isometricTilePoint(wall.column, wall.row)
+                    Image(
+                        painter = painterResource(wall.resource),
+                        contentDescription = null,
+                        modifier = Modifier.offset(
+                            x = point.x - 6.dp,
+                            y = point.y - 80.dp
+                        ).size(width = 66.dp, height = 84.dp)
+                            .graphicsLayer(scaleX = if (wall.flip) -1f else 1f),
+                        contentScale = ContentScale.FillBounds
+                    )
                 }
             }
             overlay()
@@ -942,9 +930,9 @@ private fun TutorialRoomScene(snapshot: TutorialSnapshot, robotAction: String, r
             TutorialDoorSprite(
                 isOpen = snapshot.exitOpen,
                 modifier = Modifier.offset(
-                    x = isometricTilePoint(4, 2).x - 2.dp,
-                    y = isometricTilePoint(4, 2).y - 42.dp
-                ).size(52.dp)
+                    x = isometricTilePoint(4, 2).x - 8.dp,
+                    y = isometricTilePoint(4, 2).y - 80.dp
+                ).size(width = 68.dp, height = 84.dp)
             )
             if (!snapshot.energyCollected) {
                 // Keep the objective visually anchored to the same floor tile as the robot.
