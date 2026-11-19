@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -160,15 +161,15 @@ fun CyberProtocolTutorialExperience(onTutorial2: () -> Unit, onLevelCompleted: (
                 background = R.drawable.bg_digital_network,
                 modifier = Modifier.fillMaxWidth().weight(0.40f),
                 contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.155f,
+                contentVerticalInset = 0.12f,
                 backgroundHorizontalInset = 0.105f,
-                backgroundVerticalInset = 0.165f
+                backgroundVerticalInset = 0.13f
             ) { TutorialRoomScene(snapshot, robotAction, robotDirectionRow, isId) }
             TutorialTerminalPanel(
                 frame = R.drawable.ui_code_editor_frame,
                 modifier = Modifier.fillMaxWidth().weight(0.31f),
                 contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.145f
+                contentVerticalInset = 0.12f
             ) {
                 Column(
                     Modifier.fillMaxSize().background(Color(0xFF101923).copy(alpha = 1f)),
@@ -188,7 +189,7 @@ fun CyberProtocolTutorialExperience(onTutorial2: () -> Unit, onLevelCompleted: (
                     BasicTextField(
                         value = source,
                         onValueChange = { source = it },
-                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        modifier = Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState()),
                         textStyle = TextStyle(
                             color = TutorialEditorBase,
                             fontFamily = DepartureMonoFamily,
@@ -198,7 +199,7 @@ fun CyberProtocolTutorialExperience(onTutorial2: () -> Unit, onLevelCompleted: (
                         cursorBrush = SolidColor(TutorialAccent),
                         visualTransformation = TutorialSyntax,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
-                        maxLines = 5,
+                        maxLines = Int.MAX_VALUE,
                         decorationBox = { innerTextField ->
                             Box(Modifier.fillMaxSize().padding(horizontal = 5.dp, vertical = 2.dp)) {
                                 innerTextField()
@@ -340,9 +341,9 @@ robot.action()"""
                 background = R.drawable.bg_digital_network,
                 modifier = Modifier.fillMaxWidth().weight(0.40f),
                 contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.155f,
+                contentVerticalInset = 0.12f,
                 backgroundHorizontalInset = 0.105f,
-                backgroundVerticalInset = 0.165f
+                backgroundVerticalInset = 0.13f
             ) { Tutorial2RoomScene(snapshot, robotAction, robotDirectionRow, isId) {
                     if (!running && !snapshot.completed) {
                         snapshot = snapshot.copy(
@@ -361,7 +362,7 @@ robot.action()"""
                 frame = R.drawable.ui_code_editor_frame,
                 modifier = Modifier.fillMaxWidth().weight(0.31f),
                 contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.145f
+                contentVerticalInset = 0.12f
             ) {
                 Column(
                     Modifier.fillMaxSize().background(Color(0xFF101923)),
@@ -381,7 +382,7 @@ robot.action()"""
                     BasicTextField(
                         value = source,
                         onValueChange = { source = it },
-                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        modifier = Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState()),
                         textStyle = TextStyle(
                             color = TutorialEditorBase,
                             fontFamily = DepartureMonoFamily,
@@ -391,7 +392,7 @@ robot.action()"""
                         cursorBrush = SolidColor(TutorialAccent),
                         visualTransformation = TutorialSyntax,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
-                        maxLines = 8,
+                        maxLines = Int.MAX_VALUE,
                         decorationBox = { innerTextField ->
                             Box(Modifier.fillMaxSize().padding(horizontal = 5.dp, vertical = 1.dp)) {
                                 innerTextField()
@@ -617,7 +618,7 @@ private fun TutorialIsometricMap(
                     modifier = Modifier.offset(
                         x = isometricTilePoint(0, 0).x,
                         y = isometricTilePoint(0, 0).y - 38.dp
-                    ).size(54.dp),
+                    ) .size(width = 54.dp, height = 48.dp),
                     contentScale = ContentScale.Fit
                 )
                 Image(
@@ -626,7 +627,7 @@ private fun TutorialIsometricMap(
                     modifier = Modifier.offset(
                         x = isometricTilePoint(columnCount - 1, 0).x,
                         y = isometricTilePoint(columnCount - 1, 0).y - 38.dp
-                    ).size(54.dp),
+                    ) .size(width = 54.dp, height = 48.dp),
                     contentScale = ContentScale.Fit
                 )
                 for (column in 1 until columnCount - 1) {
@@ -641,7 +642,7 @@ private fun TutorialIsometricMap(
                         modifier = Modifier.offset(
                             x = isometricTilePoint(column, 0).x,
                             y = isometricTilePoint(column, 0).y - 38.dp
-                        ).size(54.dp),
+                        ).size(width = 54.dp, height = 48.dp),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -652,7 +653,7 @@ private fun TutorialIsometricMap(
                         modifier = Modifier.offset(
                             x = isometricTilePoint(0, row).x,
                             y = isometricTilePoint(0, row).y - 38.dp
-                        ).size(54.dp).graphicsLayer(scaleX = -1f),
+                        ).size(width = 54.dp, height = 48.dp).graphicsLayer(scaleX = -1f),
                         contentScale = ContentScale.Fit
                     )
                     if (row != rightWallOpeningRow) {
@@ -662,7 +663,7 @@ private fun TutorialIsometricMap(
                             modifier = Modifier.offset(
                                 x = isometricTilePoint(columnCount - 1, row).x,
                                 y = isometricTilePoint(columnCount - 1, row).y - 38.dp
-                            ).size(54.dp).graphicsLayer(scaleX = -1f),
+                            ).size(width = 54.dp, height = 48.dp).graphicsLayer(scaleX = -1f),
                             contentScale = ContentScale.Fit
                         )
                     }
@@ -671,9 +672,9 @@ private fun TutorialIsometricMap(
             overlay()
             Box(
                 Modifier.offset(
-                    x = 108.dp + robotX - 1.dp,
-                    y = robotY - 20.dp
-                ).size(58.dp),
+                    x = 108.dp + robotX - 8.dp,
+                    y = robotY - 28.dp
+                ).size(74.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
@@ -690,7 +691,7 @@ private fun TutorialIsometricMap(
                             CircleShape
                         )
                 )
-                TutorialRobotSprite(robotAction, robotDirectionRow, Modifier.size(56.dp))
+                TutorialRobotSprite(robotAction, robotDirectionRow, Modifier.size(72.dp))
             }
         }
     }
@@ -1055,10 +1056,10 @@ private fun SpriteSheetAnimation(
 
     if (frames.isNotEmpty()) {
         val pivotOffsetX = spec.pivotX?.let {
-            (0.5f - it.toFloat() / spec.frameWidth) * 56f
+            (0.5f - it.toFloat() / spec.frameWidth) * 72f
         } ?: 0f
         val pivotOffsetY = spec.pivotY?.let {
-            (0.5f - it.toFloat() / spec.frameHeight) * 56f
+            (0.5f - it.toFloat() / spec.frameHeight) * 72f
         } ?: 0f
         Image(
             bitmap = frames[frame.coerceIn(0, frames.lastIndex)].asImageBitmap(),
