@@ -610,8 +610,8 @@ private fun TutorialIsometricMap(
                 ).size(width = 54.dp, height = 27.dp),
                 contentScale = ContentScale.FillBounds
             )
-            // Minimal training-room shell: one back wall and short side returns.
-            // Keep the front open so the 5x5 floor, robot and objective remain readable.
+            // Two rear planes follow the two diagonal edges of the isometric floor.
+            // The right plane leaves one measured opening for the exit door.
             data class WallPlacement(
                 val column: Int,
                 val row: Int,
@@ -621,6 +621,7 @@ private fun TutorialIsometricMap(
             val columnCount = map.firstOrNull()?.length ?: 0
             if (columnCount > 0 && map.isNotEmpty()) {
                 val walls = buildList {
+                    // Rear-left plane: the complete far edge of the diamond.
                     for (column in 0 until columnCount) {
                         add(
                             WallPlacement(
@@ -634,9 +635,19 @@ private fun TutorialIsometricMap(
                             )
                         )
                     }
-                    if (map.size > 1) {
-                        add(WallPlacement(0, 1, R.drawable.tile_wall_straight, flip = true))
-                        add(WallPlacement(columnCount - 1, 1, R.drawable.tile_wall_straight, flip = true))
+                    // Rear-right plane: follows the other diagonal edge.
+                    // The exit occupies the row specified by the room layout.
+                    for (row in 1 until map.size) {
+                        if (row != rightWallOpeningRow) {
+                            add(
+                                WallPlacement(
+                                    columnCount - 1,
+                                    row,
+                                    R.drawable.tile_wall_straight,
+                                    flip = true
+                                )
+                            )
+                        }
                     }
                 }.sortedWith(compareBy<WallPlacement>({ it.column + it.row }, { it.row }, { it.column }))
 
