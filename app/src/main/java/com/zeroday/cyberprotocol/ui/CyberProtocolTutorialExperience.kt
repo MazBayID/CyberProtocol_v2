@@ -610,8 +610,8 @@ private fun TutorialIsometricMap(
                 ).size(width = 54.dp, height = 27.dp),
                 contentScale = ContentScale.FillBounds
             )
-            // Build one continuous perimeter, then draw it in isometric depth order.
-            // Wall height intentionally exceeds the MX-01 sprite so the exit reads as a real doorway.
+            // Minimal training-room shell: one back wall and short side returns.
+            // Keep the front open so the 5x5 floor, robot and objective remain readable.
             data class WallPlacement(
                 val column: Int,
                 val row: Int,
@@ -621,26 +621,22 @@ private fun TutorialIsometricMap(
             val columnCount = map.firstOrNull()?.length ?: 0
             if (columnCount > 0 && map.isNotEmpty()) {
                 val walls = buildList {
-                    add(WallPlacement(0, 0, R.drawable.tile_wall_corner))
-                    add(WallPlacement(columnCount - 1, 0, R.drawable.tile_wall_corner))
-                    for (column in 1 until columnCount - 1) {
+                    for (column in 0 until columnCount) {
                         add(
                             WallPlacement(
                                 column,
                                 0,
-                                if (column == (columnCount - 1) / 2) {
-                                    R.drawable.structure_window
-                                } else {
-                                    R.drawable.tile_wall_straight
+                                when (column) {
+                                    0, columnCount - 1 -> R.drawable.tile_wall_corner
+                                    (columnCount - 1) / 2 -> R.drawable.structure_window
+                                    else -> R.drawable.tile_wall_straight
                                 }
                             )
                         )
                     }
-                    for (row in 1 until map.size) {
-                        add(WallPlacement(0, row, R.drawable.tile_wall_straight, flip = true))
-                        if (row != rightWallOpeningRow) {
-                            add(WallPlacement(columnCount - 1, row, R.drawable.tile_wall_straight, flip = true))
-                        }
+                    if (map.size > 1) {
+                        add(WallPlacement(0, 1, R.drawable.tile_wall_straight, flip = true))
+                        add(WallPlacement(columnCount - 1, 1, R.drawable.tile_wall_straight, flip = true))
                     }
                 }.sortedWith(compareBy<WallPlacement>({ it.column + it.row }, { it.row }, { it.column }))
 
