@@ -1,0 +1,208 @@
+name: Cyber Protocol — Build, Test & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      final_release:
+        description: "Build, emulator-smoke-test, and publish the Final Release APK"
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: cyber-protocol-release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  source-tests:
+    name: Source tests (no APK)
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Test Python runner
+        run: python -m unittest discover -s tests -v
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: "platform-tools"
+
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Run Android unit tests
+        run: gradle --no-daemon testReleaseUnitTest
+
+  final-release:
+    name: Final APK — smoke-tested exact binary
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.final_release == true)
+    needs: source-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the approved release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: "platform-tools"
+
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Restore and validate permanent release keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$ANDROID_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
+
+          KEYSTORE_PATH="$RUNNER_TEMP/cyberprotocol-release.jks"
+          CERT_PATH="$RUNNER_TEMP/cyberprotocol-release-cert.der"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
+
+          keytool -list -keystore "$KEYSTORE_PATH" \
+            -alias "$ANDROID_KEY_ALIAS" \
+            -storepass:env ANDROID_KEYSTORE_PASSWORD >/dev/null
+          keytool -exportcert -keystore "$KEYSTORE_PATH" \
+            -alias "$ANDROID_KEY_ALIAS" \
+            -storepass:env ANDROID_KEYSTORE_PASSWORD \
+            -file "$CERT_PATH" >/dev/null
+
+          CERT_SHA256=$(sha256sum "$CERT_PATH" | awk '{print tolower($1)}')
+          echo "EXPECTED_CERT_SHA256=$CERT_SHA256" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+
+      - name: Set monotonically increasing Android version code
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))
+          echo "ANDROID_VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          echo "Final Release version code: $VERSION_CODE"
+
+      - name: Build the single permanently signed Release APK
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle --no-daemon assembleRelease
+
+      - name: Validate package, version, ABIs, and permanent signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+
+          BADGING=$("$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK")
+          ACTUAL_PACKAGE=$(printf '%s\n' "$BADGING" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n 1)
+          ACTUAL_VERSION_CODE=$(printf '%s\n' "$BADGING" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p" | head -n 1)
+
+          test "$ACTUAL_PACKAGE" = "com.zeroday.cyberprotocol"
+          test "$ACTUAL_VERSION_CODE" = "$ANDROID_VERSION_CODE"
+          test "$ACTUAL_VERSION_CODE" -gt 6
+
+          unzip -Z1 "$APK" | grep -q '^lib/arm64-v8a/'
+          unzip -Z1 "$APK" | grep -q '^lib/x86_64/'
+
+          SIGNATURE_OUTPUT=$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK")
+          printf '%s\n' "$SIGNATURE_OUTPUT"
+          ACTUAL_CERT_SHA256=$(printf '%s\n' "$SIGNATURE_OUTPUT" | \
+            awk -F': ' '/Signer #1 certificate SHA-256 digest:/ {print tolower($2); exit}' | tr -d ':')
+          EXPECTED=$(printf '%s' "$EXPECTED_CERT_SHA256" | tr -d ':')
+          test -n "$ACTUAL_CERT_SHA256"
+          test "$ACTUAL_CERT_SHA256" = "$EXPECTED"
+
+          APK_SHA256=$(sha256sum "$APK" | awk '{print $1}')
+          echo "APK_SHA256=$APK_SHA256" >> "$GITHUB_ENV"
+          echo "APK=$APK" >> "$GITHUB_ENV"
+          echo "Package: $ACTUAL_PACKAGE" >> "$GITHUB_STEP_SUMMARY"
+          echo "Version code: $ACTUAL_VERSION_CODE" >> "$GITHUB_STEP_SUMMARY"
+          echo "ABIs: arm64-v8a, x86_64" >> "$GITHUB_STEP_SUMMARY"
+          echo "Permanent signing certificate: verified" >> "$GITHUB_STEP_SUMMARY"
+          echo "APK SHA-256: $APK_SHA256" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install and smoke-test the exact Release APK on Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_2
+          script: |
+            set -euo pipefail
+            adb install "$APK"
+            adb shell pm path com.zeroday.cyberprotocol
+            adb shell am force-stop com.zeroday.cyberprotocol
+            adb shell monkey -p com.zeroday.cyberprotocol -c android.intent.category.LAUNCHER 1
+            sleep 20
+            adb shell pidof com.zeroday.cyberprotocol
+            echo "FINAL APK STATUS: SMOKE-TESTED — exact signed release APK installed and launched successfully."
+
+      - name: Confirm the tested APK is unchanged and prepare its digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA256=$(sha256sum "$APK" | awk '{print $1}')
+          test "$ACTUAL_SHA256" = "$APK_SHA256"
+          mkdir -p release_apk
+          cp "$APK" release_apk/app-release.apk
+          test -s release_apk/app-release.apk
+          printf '%s  %s\n' "$APK_SHA256" "app-release.apk" > app-release.apk.sha256
+          echo "BUILD CLASS: FINAL" >> "$GITHUB_STEP_SUMMARY"
+          echo "EMULATOR SMOKE TEST: PASSED — exact published APK" >> "$GITHUB_STEP_SUMMARY"
+          echo "Tested APK SHA-256 unchanged: $ACTUAL_SHA256" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish the tested APK and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyber-protocol-final-smoke-tested
+          path: |
+            release_apk/app-release.apk
+            app-release.apk.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove temporary signing material
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/cyberprotocol-release.jks"
+          rm -f "$RUNNER_TEMP/cyberprotocol-release-cert.der"

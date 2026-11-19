@@ -1,0 +1,652 @@
+{
+  "_meta": {
+    "schemaVersion": 2,
+    "purpose": "Rendering and playback metadata supplementing asset_manifest.json.",
+    "coverage": "Not an exhaustive list of every sprite sheet. The manifest remains authoritative for file paths, dimensions, sheet layout, frame count, and asset lifecycle. This file records playback/rendering properties only where an explicit runtime specification is maintained.",
+    "sections": {
+      "assetSpecs": "Per-asset playback or rendering specifications. Includes static render helpers such as robot_shadow.",
+      "uiCompositions": "Layer composition and track geometry for dynamic UI bars; these keys are logical components, not standalone image files.",
+      "appSequences": "Application-owned sequences stored outside assets_master/assets."
+    },
+    "counts": {
+      "assetSpecs": 34,
+      "uiCompositions": 4,
+      "appSequences": 1
+    }
+  },
+  "assetSpecs": {
+    "anim_robot_idle": {
+      "fps": 6,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_walk": {
+      "fps": 12,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_interact": {
+      "fps": 10,
+      "loop": false,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_scan": {
+      "fps": 10,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_work": {
+      "fps": 10,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_damaged": {
+      "fps": 14,
+      "loop": false,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_repair": {
+      "fps": 10,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "robot_shadow": {
+      "fps": 0,
+      "loop": false,
+      "blend": "alpha",
+      "frames": 1,
+      "frameSize": [
+        256,
+        128
+      ],
+      "pivot": [
+        128,
+        64
+      ],
+      "directions": null
+    },
+    "fx_explosion_small": {
+      "fps": 18,
+      "loop": false,
+      "blend": "alpha",
+      "frames": 12,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_smoke": {
+      "fps": 10,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 12,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_electric_arc": {
+      "fps": 16,
+      "loop": true,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        256,
+        128
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_electric_spark": {
+      "fps": 18,
+      "loop": false,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        128,
+        128
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_welding_sparks": {
+      "fps": 18,
+      "loop": true,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        128,
+        128
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_loading_data_stream": {
+      "fps": 12,
+      "loop": true,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        128,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_energy_flow": {
+      "fps": 12,
+      "loop": true,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        256,
+        64
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_scan_sweep": {
+      "fps": 12,
+      "loop": true,
+      "blend": "additive",
+      "frames": 10,
+      "frameSize": [
+        256,
+        128
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_selection_glow": {
+      "fps": 10,
+      "loop": true,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        256,
+        128
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_robot_spawn": {
+      "fps": 16,
+      "loop": false,
+      "blend": "additive",
+      "frames": 12,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_robot_despawn": {
+      "fps": 16,
+      "loop": false,
+      "blend": "additive",
+      "frames": 12,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_interaction_success": {
+      "fps": 14,
+      "loop": false,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_interaction_failed": {
+      "fps": 14,
+      "loop": false,
+      "blend": "additive",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "fx_glitch_static_noise": {
+      "fps": 12,
+      "loop": true,
+      "blend": "additive",
+      "frames": 6,
+      "frameSize": [
+        256,
+        192
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "anim_loading_spinner": {
+      "fps": 16,
+      "loop": true,
+      "blend": "additive",
+      "frames": 12,
+      "frameSize": [
+        128,
+        128
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "anim_loading_hex_core": {
+      "fps": 12,
+      "loop": true,
+      "blend": "additive",
+      "frames": 12,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": null,
+      "directions": null
+    },
+    "anim_conveyor_active": {
+      "fps": 12,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 12,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        170
+      ],
+      "directions": [
+        "SE-NW",
+        "SW-NE"
+      ]
+    },
+    "anim_robot_courier_idle": {
+      "fps": 6,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_courier_walk": {
+      "fps": 12,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_courier_handoff": {
+      "fps": 10,
+      "loop": false,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_maintenance_idle": {
+      "fps": 6,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_maintenance_walk": {
+      "fps": 12,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_maintenance_repair": {
+      "fps": 10,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_drone_idle": {
+      "fps": 6,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_drone_move": {
+      "fps": 12,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    },
+    "anim_robot_drone_repair": {
+      "fps": 10,
+      "loop": true,
+      "blend": "alpha",
+      "frames": 8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        206
+      ],
+      "directions": [
+        "SW",
+        "SE",
+        "NE",
+        "NW"
+      ]
+    }
+  },
+  "uiCompositions": {
+    "ui_loading_progress": {
+      "type": "layered progress bar",
+      "layers": [
+        "ui_loading_progress_frame",
+        "ui_loading_progress_fill",
+        "ui_loading_progress_gloss"
+      ],
+      "trackRect": [
+        24,
+        16,
+        464,
+        40
+      ],
+      "size": [
+        512,
+        72
+      ]
+    },
+    "ui_progress_bar": {
+      "type": "layered progress bar",
+      "layers": [
+        "ui_progress_bar_frame",
+        "ui_progress_bar_fill",
+        "ui_progress_bar_gloss"
+      ],
+      "trackRect": [
+        20,
+        12,
+        344,
+        32
+      ],
+      "size": [
+        384,
+        56
+      ]
+    },
+    "ui_energy_bar": {
+      "type": "layered progress bar",
+      "layers": [
+        "ui_energy_bar_frame",
+        "ui_energy_bar_fill",
+        "ui_energy_bar_gloss"
+      ],
+      "trackRect": [
+        52,
+        11,
+        224,
+        26
+      ],
+      "size": [
+        288,
+        48
+      ]
+    },
+    "ui_health_bar": {
+      "type": "layered progress bar",
+      "layers": [
+        "ui_health_bar_frame",
+        "ui_health_bar_fill",
+        "ui_health_bar_gloss"
+      ],
+      "trackRect": [
+        52,
+        11,
+        224,
+        26
+      ],
+      "size": [
+        288,
+        48
+      ]
+    }
+  },
+  "appSequences": {
+    "app_entry_loading_sequence": {
+      "source": "app/src/main/assets/loading/",
+      "framePattern": "frame_{index:03d}.webp",
+      "firstFrame": 2,
+      "lastFrame": 240,
+      "frameStep": 2,
+      "frameCount": 120,
+      "fps": 24,
+      "playbackOrder": "ascending_even_frames",
+      "status": "proposed_in_PR_19",
+      "note": "This is the app entry cinematic sequence, not one of the small loading spritesheets stored in assets_master/assets/effects/."
+    }
+  }
+}
