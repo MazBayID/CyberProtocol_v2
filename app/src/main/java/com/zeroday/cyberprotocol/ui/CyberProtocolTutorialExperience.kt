@@ -1,18 +1,12 @@
 package com.zeroday.cyberprotocol.ui
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,8 +21,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,11 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -57,7 +46,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zeroday.cyberprotocol.R
@@ -72,6 +60,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.zeroday.cyberprotocol.ui.iso.IsoMetrics
+import com.zeroday.cyberprotocol.ui.iso.IsoProjection
+import com.zeroday.cyberprotocol.ui.iso.IsoProp
+import com.zeroday.cyberprotocol.ui.iso.IsoPropKind
+import com.zeroday.cyberprotocol.ui.iso.IsoRobot
+import com.zeroday.cyberprotocol.ui.iso.IsoRoom
 
 private val TutorialBackground = Color(0xFF070C12)
 private val TutorialAccent = Color(0xFFB56CFF)
@@ -93,7 +87,7 @@ fun CyberProtocolTutorialExperience(onTutorial2: () -> Unit, onLevelCompleted: (
     var error by rememberSaveable { mutableStateOf("") }
     var running by remember { mutableStateOf(false) }
     var robotAction by remember { mutableStateOf("idle") }
-    var robotDirectionRow by remember { mutableIntStateOf(1) }
+    var robotDirectionRow by remember { mutableIntStateOf(IsoMetrics.directionRow(IsoProjection.COL_UP_RIGHT, 1, 0, 2)) }
     val scope = rememberCoroutineScope()
     val execution = remember { TutorialExecutionService() }
 
@@ -113,13 +107,12 @@ fun CyberProtocolTutorialExperience(onTutorial2: () -> Unit, onLevelCompleted: (
                         if (parts.size == 3) {
                             val nextX = parts[1].toIntOrNull() ?: snapshot.robotX
                             val nextY = parts[2].toIntOrNull() ?: snapshot.robotY
-                            robotDirectionRow = when {
-                                nextX > snapshot.robotX -> 1 // SE
-                                nextX < snapshot.robotX -> 3 // NW
-                                nextY > snapshot.robotY -> 0 // SW
-                                nextY < snapshot.robotY -> 2 // NE
-                                else -> robotDirectionRow
-                            }
+                            robotDirectionRow = IsoMetrics.directionRow(
+                                IsoProjection.COL_UP_RIGHT,
+                                nextX - snapshot.robotX,
+                                nextY - snapshot.robotY,
+                                robotDirectionRow
+                            )
                             snapshot = snapshot.copy(robotX = nextX, robotY = nextY)
                         }
                         delay(390L)
@@ -267,7 +260,7 @@ robot.action()"""
     var error by rememberSaveable { mutableStateOf("") }
     var running by remember { mutableStateOf(false) }
     var robotAction by remember { mutableStateOf("idle") }
-    var robotDirectionRow by remember { mutableIntStateOf(1) }
+    var robotDirectionRow by remember { mutableIntStateOf(IsoMetrics.directionRow(IsoProjection.COL_UP_RIGHT, 1, 0, 2)) }
     val scope = rememberCoroutineScope()
     val execution = remember { Tutorial2ExecutionService() }
 
@@ -293,13 +286,12 @@ robot.action()"""
                         if (parts.size == 3) {
                             val nextX = parts[1].toIntOrNull() ?: snapshot.robotX
                             val nextY = parts[2].toIntOrNull() ?: snapshot.robotY
-                            robotDirectionRow = when {
-                                nextX > snapshot.robotX -> 1 // SE
-                                nextX < snapshot.robotX -> 3 // NW
-                                nextY > snapshot.robotY -> 0 // SW
-                                nextY < snapshot.robotY -> 2 // NE
-                                else -> robotDirectionRow
-                            }
+                            robotDirectionRow = IsoMetrics.directionRow(
+                                IsoProjection.COL_UP_RIGHT,
+                                nextX - snapshot.robotX,
+                                nextY - snapshot.robotY,
+                                robotDirectionRow
+                            )
                             snapshot = snapshot.copy(robotX = nextX, robotY = nextY)
                         }
                         delay(390L)
@@ -548,151 +540,6 @@ private fun Tutorial2Guidance(snapshot: Tutorial2Snapshot, isId: Boolean, compac
     )
 }
 
-private data class IsometricTilePoint(val x: Dp, val y: Dp)
-
-private fun isometricTilePoint(column: Int, row: Int): IsometricTilePoint =
-    IsometricTilePoint(
-        x = (108 + (column - row) * 27).dp,
-        y = ((column + row) * 13.5f + 38f).dp
-    )
-
-@Composable
-private fun TutorialIsometricMap(
-    map: List<String>,
-    robotXPosition: Int,
-    robotYPosition: Int,
-    robotAction: String,
-    robotDirectionRow: Int,
-    rightWallOpeningRow: Int? = null,
-    animationLabelPrefix: String,
-    modifier: Modifier = Modifier,
-    overlay: @Composable BoxScope.() -> Unit = {}
-) {
-    BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
-        val mapScale = minOf(maxWidth.value / 270f, maxHeight.value / 187f).coerceIn(0.75f, 1.25f)
-        Box(
-            Modifier.size(width = 270.dp, height = 187.dp)
-                .graphicsLayer(scaleX = mapScale, scaleY = mapScale)
-        ) {
-            val robotX by animateDpAsState(
-                targetValue = ((robotXPosition - robotYPosition) * 27).dp,
-                animationSpec = tween(durationMillis = 360),
-                label = "${animationLabelPrefix}_robot_x"
-            )
-            val robotY by animateDpAsState(
-                targetValue = ((robotXPosition + robotYPosition) * 13.5f + 38f).dp,
-                animationSpec = tween(durationMillis = 360),
-                label = "${animationLabelPrefix}_robot_y"
-            )
-            val cells = remember(map) {
-                map.flatMapIndexed { row, tiles -> tiles.indices.map { col -> col to row } }
-                    .sortedBy { it.first + it.second }
-            }
-            cells.forEach { (col, row) ->
-                if (map.getOrNull(row)?.getOrNull(col) == '.') {
-                    Image(
-                        painter = painterResource(R.drawable.tile_floor_metal),
-                        contentDescription = null,
-                        modifier = Modifier.offset(
-                            x = isometricTilePoint(col, row).x,
-                            y = isometricTilePoint(col, row).y
-                        ).size(width = 54.dp, height = 32.dp),
-                        contentScale = ContentScale.FillBounds
-                    )
-                }
-            }
-            Image(
-                painter = painterResource(R.drawable.ui_selection_marker),
-                contentDescription = null,
-                modifier = Modifier.offset(
-                    x = 108.dp + robotX,
-                    y = robotY
-                ).size(width = 54.dp, height = 27.dp),
-                contentScale = ContentScale.FillBounds
-            )
-            // Two rear planes follow the two diagonal edges of the isometric floor.
-            // The right plane leaves one measured opening for the exit door.
-            data class WallPlacement(
-                val column: Int,
-                val row: Int,
-                val resource: Int,
-                val flip: Boolean = false
-            )
-            val columnCount = map.firstOrNull()?.length ?: 0
-            if (columnCount > 0 && map.isNotEmpty()) {
-                val walls = buildList {
-                    // Rear-left plane: the complete far edge of the diamond.
-                    for (column in 0 until columnCount) {
-                        add(
-                            WallPlacement(
-                                column,
-                                0,
-                                when (column) {
-                                    0, columnCount - 1 -> R.drawable.tile_wall_corner
-                                    (columnCount - 1) / 2 -> R.drawable.structure_window
-                                    else -> R.drawable.tile_wall_straight
-                                }
-                            )
-                        )
-                    }
-                    // Rear-right plane: follows the other diagonal edge.
-                    // The exit occupies the row specified by the room layout.
-                    for (row in 1 until map.size) {
-                        if (row != rightWallOpeningRow) {
-                            add(
-                                WallPlacement(
-                                    columnCount - 1,
-                                    row,
-                                    R.drawable.tile_wall_straight,
-                                    flip = true
-                                )
-                            )
-                        }
-                    }
-                }.sortedWith(compareBy<WallPlacement>({ it.column + it.row }, { it.row }, { it.column }))
-
-                walls.forEach { wall ->
-                    val point = isometricTilePoint(wall.column, wall.row)
-                    Image(
-                        painter = painterResource(wall.resource),
-                        contentDescription = null,
-                        modifier = Modifier.offset(
-                            x = point.x - 6.dp,
-                            y = point.y - 80.dp
-                        ).size(width = 66.dp, height = 84.dp)
-                            .graphicsLayer(scaleX = if (wall.flip) -1f else 1f),
-                        contentScale = ContentScale.FillBounds
-                    )
-                }
-            }
-            overlay()
-            Box(
-                Modifier.offset(
-                    x = 108.dp + robotX - 8.dp,
-                    y = robotY - 28.dp
-                ).size(74.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    Modifier
-                        .size(width = 30.dp, height = 10.dp)
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0x66000000),
-                                    Color(0x33000000),
-                                    Color.Transparent
-                                )
-                            ),
-                            CircleShape
-                        )
-                )
-                TutorialRobotSprite(robotAction, robotDirectionRow, Modifier.size(72.dp))
-            }
-        }
-    }
-}
-
 @Composable
 private fun Tutorial2RoomScene(
     snapshot: Tutorial2Snapshot,
@@ -719,48 +566,15 @@ private fun Tutorial2RoomScene(
                 modifier = Modifier.clickable(onClick = onToggleScenario)
             )
         }
-        TutorialIsometricMap(
+        val blocked = snapshot.sensorDistance <= 30
+        IsoRoom(
             map = TrainingLevelCatalog.tutorial02.map,
-            robotXPosition = snapshot.robotX,
-            robotYPosition = snapshot.robotY,
-            robotAction = robotAction,
-            robotDirectionRow = robotDirectionRow,
-            animationLabelPrefix = "tutorial2",
+            robot = IsoRobot(snapshot.robotX, snapshot.robotY, robotAction, robotDirectionRow),
+            props = if (blocked) listOf(IsoProp(IsoPropKind.CRATE, 1, 2)) else emptyList(),
+            goalDoors = listOf(if (blocked) Pair(0, 3) else Pair(1, 2)),
+            goalDoorOpen = snapshot.checkpointOpen,
             modifier = Modifier.fillMaxWidth().weight(1f)
-        ) {
-            if (snapshot.sensorDistance <= 30) {
-                Box(
-                    Modifier.offset(
-                        x = isometricTilePoint(1, 2).x + 8.dp,
-                        y = isometricTilePoint(1, 2).y - 19.dp
-                    ).size(width = 38.dp, height = 35.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .background(Color(0xDD57252A)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    androidx.compose.material3.Text(
-                        "!",
-                        color = Color(0xFFFF7777),
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Black
-                    )
-                }
-            }
-            TutorialDoorSprite(
-                isOpen = snapshot.checkpointOpen,
-                modifier = Modifier.offset(
-                    x = if (snapshot.sensorDistance <= 30) {
-                        isometricTilePoint(0, 3).x - 2.dp
-                    } else {
-                        isometricTilePoint(1, 2).x - 2.dp
-                    },
-                    y = isometricTilePoint(
-                        if (snapshot.sensorDistance <= 30) 0 else 1,
-                        if (snapshot.sensorDistance <= 30) 3 else 2
-                    ).y - 42.dp
-                ).size(52.dp)
-            )
-        }
+        )
         Row(
             Modifier.fillMaxWidth().padding(start = 10.dp, end = 6.dp, bottom = 5.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -924,52 +738,14 @@ private fun TutorialRoomScene(snapshot: TutorialSnapshot, robotAction: String, r
             Spacer(Modifier.weight(1f))
             androidx.compose.material3.Text("ROOM 01  /  5 × 5", color = TutorialMuted, fontSize = 9.sp)
         }
-        TutorialIsometricMap(
+        IsoRoom(
             map = TrainingLevelCatalog.tutorial01.map,
-            robotXPosition = snapshot.robotX,
-            robotYPosition = snapshot.robotY,
-            robotAction = robotAction,
-            robotDirectionRow = robotDirectionRow,
-            rightWallOpeningRow = 2,
-            animationLabelPrefix = "tutorial",
+            robot = IsoRobot(snapshot.robotX, snapshot.robotY, robotAction, robotDirectionRow),
+            props = if (snapshot.energyCollected) emptyList() else listOf(IsoProp(IsoPropKind.ENERGY_CELL, 2, 2)),
+            goalDoors = listOf(Pair(4, 2)),
+            goalDoorOpen = snapshot.exitOpen,
             modifier = Modifier.fillMaxWidth().weight(1f)
-        ) {
-            TutorialDoorSprite(
-                isOpen = snapshot.exitOpen,
-                modifier = Modifier.offset(
-                    x = isometricTilePoint(4, 2).x - 8.dp,
-                    y = isometricTilePoint(4, 2).y - 80.dp
-                ).size(width = 68.dp, height = 84.dp)
-            )
-            if (!snapshot.energyCollected) {
-                // Keep the objective visually anchored to the same floor tile as the robot.
-                Box(
-                    Modifier.offset(
-                        x = isometricTilePoint(2, 2).x + 12.dp,
-                        y = isometricTilePoint(2, 2).y + 23.dp
-                    ).size(width = 30.dp, height = 8.dp)
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0xAA36E7F2),
-                                    Color(0x5536E7F2),
-                                    Color.Transparent
-                                )
-                            ),
-                            CircleShape
-                        )
-                )
-                Image(
-                    painter = painterResource(R.drawable.resource_energy_cell),
-                    contentDescription = "Energy cell objective",
-                    modifier = Modifier.offset(
-                        x = isometricTilePoint(2, 2).x + 9.dp,
-                        y = isometricTilePoint(2, 2).y - 13.dp
-                    ).size(36.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-        }
+        )
         Row(
             Modifier.fillMaxWidth().padding(start = 10.dp, end = 6.dp, bottom = 5.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -983,158 +759,6 @@ private fun TutorialRoomScene(snapshot: TutorialSnapshot, robotAction: String, r
             )
         }
     }
-}
-
-private data class SpriteSheetSpec(
-    val rows: Int,
-    val columns: Int,
-    val frameCount: Int,
-    val fps: Int,
-    val loop: Boolean,
-    val directionRow: Int = 0,
-    val frameWidth: Int,
-    val frameHeight: Int,
-    val pivotX: Int? = null,
-    val pivotY: Int? = null
-)
-
-private fun decodeSpriteFrames(
-    context: android.content.Context,
-    resource: Int,
-    spec: SpriteSheetSpec
-): List<Bitmap> {
-    if (spec.rows <= 0 || spec.columns <= 0 || spec.frameCount <= 0) return emptyList()
-    val sheet = BitmapFactory.decodeResource(context.resources, resource) ?: return emptyList()
-    if (sheet.width % spec.columns != 0 || sheet.height % spec.rows != 0) {
-        sheet.recycle()
-        return emptyList()
-    }
-
-    val frameWidth = sheet.width / spec.columns
-    val frameHeight = sheet.height / spec.rows
-    if (frameWidth != spec.frameWidth || frameHeight != spec.frameHeight) {
-        sheet.recycle()
-        return emptyList()
-    }
-
-    val row = spec.directionRow.coerceIn(0, spec.rows - 1)
-    val count = spec.frameCount.coerceAtMost(spec.columns)
-    return try {
-        (0 until count).map { index ->
-            Bitmap.createBitmap(
-                sheet,
-                index * frameWidth,
-                row * frameHeight,
-                frameWidth,
-                frameHeight
-            )
-        }
-    } finally {
-        sheet.recycle()
-    }
-}
-
-@Composable
-private fun SpriteSheetAnimation(
-    resource: Int,
-    spec: SpriteSheetSpec,
-    contentDescription: String,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val frames = remember(resource, spec) { decodeSpriteFrames(context, resource, spec) }
-    var frame by remember(resource, spec) { mutableIntStateOf(0) }
-
-    LaunchedEffect(resource, spec, frames.size) {
-        frame = 0
-        if (frames.isNotEmpty()) {
-            val frameDelay = (1000L / spec.fps.coerceAtLeast(1)).coerceAtLeast(1L)
-            if (spec.loop) {
-                while (true) {
-                    delay(frameDelay)
-                    frame = (frame + 1) % frames.size
-                }
-            } else {
-                frames.indices.forEach { index ->
-                    frame = index
-                    if (index < frames.lastIndex) delay(frameDelay)
-                }
-            }
-        }
-    }
-
-    DisposableEffect(frames) {
-        onDispose { frames.forEach { bitmap -> if (!bitmap.isRecycled) bitmap.recycle() } }
-    }
-
-    if (frames.isNotEmpty()) {
-        val pivotOffsetX = spec.pivotX?.let {
-            (0.5f - it.toFloat() / spec.frameWidth) * 72f
-        } ?: 0f
-        val pivotOffsetY = spec.pivotY?.let {
-            (0.5f - it.toFloat() / spec.frameHeight) * 72f
-        } ?: 0f
-        Image(
-            bitmap = frames[frame.coerceIn(0, frames.lastIndex)].asImageBitmap(),
-            contentDescription = contentDescription,
-            modifier = modifier.offset(x = pivotOffsetX.dp, y = pivotOffsetY.dp),
-            contentScale = ContentScale.Fit
-        )
-    }
-}
-
-@Composable
-private fun TutorialRobotSprite(action: String, directionRow: Int, modifier: Modifier = Modifier) {
-    val (resource, fps, loop) = when (action) {
-        "move" -> Triple(R.drawable.anim_robot_walk, 12, true)
-        "interact" -> Triple(R.drawable.anim_robot_interact, 10, false)
-        else -> Triple(R.drawable.anim_robot_idle, 6, true)
-    }
-    SpriteSheetAnimation(
-        resource = resource,
-        spec = SpriteSheetSpec(
-            rows = 4,
-            columns = 8,
-            frameCount = 8,
-            fps = fps,
-            loop = loop,
-            directionRow = directionRow.coerceIn(0, 3),
-            frameWidth = 256,
-            frameHeight = 256,
-            pivotX = 128,
-            pivotY = 206
-        ),
-        contentDescription = "MX-01 robot animation",
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun TutorialDoorSprite(isOpen: Boolean, modifier: Modifier = Modifier) {
-    if (!isOpen) {
-        Image(
-            painter = painterResource(R.drawable.structure_door),
-            contentDescription = "Closed exit",
-            modifier = modifier,
-            contentScale = ContentScale.Fit
-        )
-        return
-    }
-
-    SpriteSheetAnimation(
-        resource = R.drawable.anim_door_open,
-        spec = SpriteSheetSpec(
-            rows = 1,
-            columns = 4,
-            frameCount = 4,
-            fps = 8,
-            loop = false,
-            frameWidth = 256,
-            frameHeight = 256
-        ),
-        contentDescription = "Opening exit door",
-        modifier = modifier
-    )
 }
 
 private class PythonSyntaxHighlightTransformation : VisualTransformation {

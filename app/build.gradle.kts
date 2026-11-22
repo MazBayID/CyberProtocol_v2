@@ -90,10 +90,10 @@ dependencies {
 // The full assets_master directory remains outside Android source sets and the APK.
 val stageGameplayAssets by tasks.registering(Copy::class) {
     from(rootProject.file("assets_master/assets/environment")) {
-        include("tile_wall_straight.webp", "tile_wall_corner.webp", "structure_window.webp")
+        include("tile_wall_straight.webp", "tile_wall_corner.webp", "structure_window.webp", "prop_supply_crate.webp")
     }
-    from(rootProject.file("assets_master/assets/ui")) {
-        include("ui_selection_marker.webp")
+    from(rootProject.file("assets_master/assets/characters/robots")) {
+        include("robot_shadow.webp", "anim_robot_scan.webp")
     }
     into(generatedGameplayAssetRes.get().dir("drawable-nodpi"))
 }
