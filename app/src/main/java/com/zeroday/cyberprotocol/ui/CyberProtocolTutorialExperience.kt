@@ -60,6 +60,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.zeroday.cyberprotocol.ui.hud.HudFrame
+import com.zeroday.cyberprotocol.ui.hud.HudFrameVariant
 import com.zeroday.cyberprotocol.ui.iso.IsoMetrics
 import com.zeroday.cyberprotocol.ui.iso.IsoProjection
 import com.zeroday.cyberprotocol.ui.iso.IsoProp
@@ -145,25 +147,17 @@ fun CyberProtocolTutorialExperience(onTutorial2: () -> Unit, onLevelCompleted: (
             verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 7.dp)
         ) {
             TutorialTerminalPanel(
-                frame = R.drawable.ui_terminal_frame_classic,
+                variant = HudFrameVariant.CLASSIC,
                 modifier = Modifier.fillMaxWidth().weight(0.29f),
-                contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.165f
             ) { TutorialGuidance(snapshot, isId, compact) }
             TutorialTerminalPanel(
-                frame = R.drawable.ui_terminal_frame,
+                variant = HudFrameVariant.TERMINAL,
                 background = R.drawable.bg_digital_network,
                 modifier = Modifier.fillMaxWidth().weight(0.40f),
-                contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.12f,
-                backgroundHorizontalInset = 0.105f,
-                backgroundVerticalInset = 0.13f
             ) { TutorialRoomScene(snapshot, robotAction, robotDirectionRow, isId) }
             TutorialTerminalPanel(
-                frame = R.drawable.ui_code_editor_frame,
+                variant = HudFrameVariant.EDITOR,
                 modifier = Modifier.fillMaxWidth().weight(0.31f),
-                contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.12f
             ) {
                 Column(
                     Modifier.fillMaxSize().background(Color(0xFF101923).copy(alpha = 1f)),
@@ -324,19 +318,13 @@ robot.action()"""
             verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 7.dp)
         ) {
             TutorialTerminalPanel(
-                frame = R.drawable.ui_terminal_frame_classic,
+                variant = HudFrameVariant.CLASSIC,
                 modifier = Modifier.fillMaxWidth().weight(0.29f),
-                contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.165f
             ) { Tutorial2Guidance(snapshot, isId, compact) }
             TutorialTerminalPanel(
-                frame = R.drawable.ui_terminal_frame,
+                variant = HudFrameVariant.TERMINAL,
                 background = R.drawable.bg_digital_network,
                 modifier = Modifier.fillMaxWidth().weight(0.40f),
-                contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.12f,
-                backgroundHorizontalInset = 0.105f,
-                backgroundVerticalInset = 0.13f
             ) { Tutorial2RoomScene(snapshot, robotAction, robotDirectionRow, isId) {
                     if (!running && !snapshot.completed) {
                         snapshot = snapshot.copy(
@@ -352,10 +340,8 @@ robot.action()"""
                     }
                 } }
             TutorialTerminalPanel(
-                frame = R.drawable.ui_code_editor_frame,
+                variant = HudFrameVariant.EDITOR,
                 modifier = Modifier.fillMaxWidth().weight(0.31f),
-                contentHorizontalInset = 0.095f,
-                contentVerticalInset = 0.12f
             ) {
                 Column(
                     Modifier.fillMaxSize().background(Color(0xFF101923)),
@@ -637,46 +623,23 @@ private fun TutorialRunButton(
 
 @Composable
 private fun TutorialTerminalPanel(
-    frame: Int,
+    variant: HudFrameVariant,
     modifier: Modifier = Modifier,
-    contentHorizontalInset: Float,
-    contentVerticalInset: Float,
     background: Int? = null,
-    backgroundHorizontalInset: Float = 0.075f,
-    backgroundVerticalInset: Float = 0.165f,
     content: @Composable () -> Unit
 ) {
-    BoxWithConstraints(modifier.clip(RoundedCornerShape(10.dp)).background(Color(0xFF101923))) {
-        // The terminal frame is an opaque asset, so it must be drawn first.
-        Image(
-            painter = painterResource(frame), contentDescription = null,
-            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds
-        )
-        // Place the network artwork over the frame, but only inside its display opening.
+    HudFrame(variant, modifier) {
+        // Network artwork fills the display opening without being stretched out of proportion.
         if (background != null) {
             Image(
                 painter = painterResource(background),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize().padding(
-                    start = maxWidth * backgroundHorizontalInset,
-                    end = maxWidth * backgroundHorizontalInset,
-                    top = maxHeight * backgroundVerticalInset,
-                    bottom = maxHeight * backgroundVerticalInset
-                ),
-                contentScale = ContentScale.FillBounds
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
         }
         // Game scene and robot are the foreground content inside the terminal display.
-        BoxWithConstraints(Modifier.fillMaxSize()) {
-            Box(
-                Modifier.fillMaxSize().padding(
-                    start = maxWidth * contentHorizontalInset,
-                    end = maxWidth * contentHorizontalInset,
-                    top = maxHeight * contentVerticalInset,
-                    bottom = maxHeight * contentVerticalInset
-                )
-            ) { content() }
-        }
+        content()
     }
 }
 

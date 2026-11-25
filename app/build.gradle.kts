@@ -95,6 +95,9 @@ val stageGameplayAssets by tasks.registering(Copy::class) {
     from(rootProject.file("assets_master/assets/characters/robots")) {
         include("robot_shadow.webp", "anim_robot_scan.webp")
     }
+    from(rootProject.file("assets_master/assets/ui")) {
+        include("hud_frame_terminal.webp", "hud_frame_classic.webp", "hud_frame_editor.webp", "hud_button_primary.webp")
+    }
     into(generatedGameplayAssetRes.get().dir("drawable-nodpi"))
 }
 

@@ -1,24 +1,20 @@
 package com.zeroday.cyberprotocol.ui
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.view.SoundEffectConstants
 import android.view.View
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,7 +27,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -43,8 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -56,8 +49,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import androidx.compose.ui.unit.sp
@@ -69,6 +60,9 @@ import com.zeroday.cyberprotocol.core.model.GameLanguage
 import com.zeroday.cyberprotocol.data.CampaignProgressPreferences
 import com.zeroday.cyberprotocol.data.GameLanguagePreferences
 import com.zeroday.cyberprotocol.data.GameSettingsPreferences
+import com.zeroday.cyberprotocol.ui.hud.HudButtonSprite
+import com.zeroday.cyberprotocol.ui.hud.HudFrame
+import com.zeroday.cyberprotocol.ui.hud.HudFrameVariant
 
 internal val DepartureMonoFamily = FontFamily(Font(R.font.departure_mono))
 
@@ -401,27 +395,7 @@ private fun EntryMenuButton(label: String, description: String, onClick: () -> U
 
 
 @Composable
-internal fun PrimaryButtonSprite(state: Int, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    val bitmap = remember {
-        BitmapFactory.decodeResource(context.resources, R.drawable.ui_button_primary_states)
-    }
-    DisposableEffect(bitmap) {
-        onDispose { bitmap?.recycle() }
-    }
-    Canvas(modifier) {
-        bitmap?.let { sheet ->
-            val frameWidth = sheet.width / 4
-            drawImage(
-                image = sheet.asImageBitmap(),
-                srcOffset = IntOffset(state.coerceIn(0, 3) * frameWidth, 0),
-                srcSize = IntSize(frameWidth, sheet.height),
-                dstSize = IntSize(size.width.toInt(), size.height.toInt()),
-                filterQuality = FilterQuality.Medium
-            )
-        }
-    }
-}
+internal fun PrimaryButtonSprite(state: Int, modifier: Modifier = Modifier) = HudButtonSprite(state, modifier)
 
 @Composable
 private fun SettingsScreen(
@@ -631,20 +605,5 @@ private fun EntryBackground(resource: Int, content: @Composable () -> Unit) {
 
 @Composable
 private fun EntryTerminalPanel(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    BoxWithConstraints(modifier.clip(RoundedCornerShape(10.dp))) {
-        Image(
-            painter = painterResource(R.drawable.ui_terminal_frame_classic),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
-        Box(
-            Modifier.fillMaxSize().padding(
-                start = maxWidth * 0.10f,
-                end = maxWidth * 0.10f,
-                top = maxHeight * 0.16f,
-                bottom = maxHeight * 0.16f
-            )
-        ) { content() }
-    }
+    HudFrame(HudFrameVariant.CLASSIC, modifier) { content() }
 }
